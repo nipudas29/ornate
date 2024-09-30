@@ -1,4 +1,5 @@
 import { ChevronRightIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function LoginPage() {
     return (
@@ -79,10 +80,10 @@ function ActionButtons() {
                         height={20}
                     />
                 </button>
-                <button className="flex-grow text-lg bg-orange-400 text-white rounded-xl md:rounded-2xl py-2 px-4 font-semibold shadow-md flex items-center justify-center">
+                <Link to={'/home'} className="flex-grow text-lg bg-orange-400 text-white rounded-xl md:rounded-2xl py-2 px-4 font-semibold shadow-md flex items-center justify-center">
                     Get Started
                     <ChevronRightIcon className="w-4 h-4 ml-2" />
-                </button>
+                </Link>
             </div>
         </div>
     );
