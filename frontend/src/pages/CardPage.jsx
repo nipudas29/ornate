@@ -58,7 +58,7 @@ function ProductDetails() {
         <div className="p-4 flex-grow">
             <div className="flex justify-between mb-4">
                 <h2 className="text-xl font-semibold">Modern Style Outfit</h2>
-                <p className="text-lg font-bold">2 ETH</p>
+                <p className="text-lg font-bold">2 SOL</p>
             </div>
             <div className="mb-2">
                 <h1 className="font-semibold text-sm">Details</h1>
