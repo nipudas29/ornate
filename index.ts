@@ -1,28 +1,52 @@
-import express from 'express'
-import cors from 'cors'
+import express from 'express';
+import mongoose from 'mongoose';
+import passport from 'passport';
+import session from 'express-session';
 import dotenv from 'dotenv';
-import mongoose from 'mongoose'
+import cookieParser from 'cookie-parser';
+import authRoutes from './routes/authRoutes';
+import configurePassport from './config/passport';
+
+import profileRoutes from './routes/profileRoutes';
+import postRoutes from './routes/postRoutes';
+import transactionRoutes from './routes/transactionRoutes';
+
 dotenv.config();
+configurePassport();
 
-export const config = {
-  mongoURI: process.env.MONGO_URI || '',
-  port: process.env.PORT || 3333,
-};
+const app = express();
+app.use(express.json());
+app.use(cookieParser());
 
-// MongoDB connection
-mongoose.connect(config.mongoURI)
-  .then(() => console.log('MongoDB connected...'))
-  .catch(err => console.log(err));
+app.use(
+  session({
+    secret: 'secret',
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 
-const app = express()
+app.use(passport.initialize());
+app.use(passport.session());
 
-app.use(express.json())
-app.use(cors())
+// Database Connection
+mongoose
+  .connect(process.env.MONGO_URI as string)
+  .then(() => console.log('MongoDB connected'))
+  .catch((err) => console.log(err));
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
+// Routes
+app.use('/auth', authRoutes);
 
-app.listen(process.env.PORT, () => {
-    console.log('Server is running at 3333')
-})
+// Default Route
+app.get('/', (_req, res) => {
+  res.send('Hello World!');
+});
+
+app.use('/api/profile', profileRoutes);
+app.use('/api/posts', postRoutes);
+app.use('/api/transactions', transactionRoutes);
+
+// Start the server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
