@@ -1,22 +1,8 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ShoppingCart, Menu, Minus, Plus, Trash2 } from 'lucide-react';
-
-function CartIcon() {
-    return (
-        <button variant="ghost" size="icon" className="relative bg-white p-2 rounded-lg">
-            <ShoppingCart className="h-5 w-5" />
-            <span className="absolute top-0 right-0 h-4 w-4 bg-orange-500 rounded-full text-xs text-white flex items-center justify-center">2</span>
-        </button>
-    );
-}
-
-function MenuIcon() {
-    return (
-        <button variant="ghost" size="icon" className='bg-white p-2 rounded-lg'>
-            <Menu className="h-6 w-6" />
-        </button>
-    );
-}
+import { useLocation } from 'react-router-dom';
+import Header from '../components/Header';
+import { useCart } from '../components/CartContext';
 
 function BackButton() {
     return (
@@ -26,21 +12,6 @@ function BackButton() {
         >
             <ChevronLeft className="h-5 w-5" />
         </button>
-    );
-}
-
-function Header() {
-    return (
-        <header className="fixed top-0 left-0 right-0 bg-[#f5e6d3] p-4 flex justify-between items-center mt-2 z-10">
-            <h1 className="font-bold">
-                <span className="text-xl text-orange-600 md:text-xl font-bold">ornate</span>
-                <span className="text-4xl text-black font-bold leading-none">.</span>
-            </h1>
-            <div className="flex items-center space-x-6">
-                <CartIcon />
-                <MenuIcon />
-            </div>
-        </header>
     );
 }
 
@@ -109,38 +80,32 @@ const PricingSummary = ({ subtotal, gasPrice, total }) => {
 
 // Main CheckoutPage component
 export default function CheckoutPage() {
-    const [cartItems, setCartItems] = useState([
-        { id: 1, name: 'Modern Style Outfit', price: 10, quantity: 1, image: '/products/p1.png', color: 'bg-pink-300' },
-    ]);
-    const [promoCode, setPromoCode] = useState('');
+    const { cartItems, updateQuantity, removeFromCart } = useCart();
 
     const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const gasPrice = 0.0997;
     const total = subtotal + gasPrice;
 
-    const updateQuantity = (id, newQuantity) => {
-        setCartItems(cartItems.map(item =>
-            item.id === id ? { ...item, quantity: Math.max(0, newQuantity) } : item
-        ));
-    };
-
     return (
         <div className="min-h-screen bg-[#f5e6d3] text-gray-800 p-4 max-w-md mx-auto font-sans">
             <Header />
 
-            {/* Add padding top to compensate for fixed header */}
-            <main className="space-y-4 mt-8 pt-6 pb-48">
+            <main className="space-y-4">
                 <div className="mt-6">
                     <BackButton />
                 </div>
                 {cartItems.map(item => (
-                    <CartItem key={item.id} item={item} updateQuantity={updateQuantity} />
+                    <CartItem
+                        key={item.id}
+                        item={item}
+                        updateQuantity={(newQuantity) => updateQuantity(item.id, newQuantity)}
+                        removeItem={() => removeFromCart(item.id)}
+                    />
                 ))}
             </main>
 
-            {/* Fixed promo code, pricing, and checkout button */}
             <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl p-4 space-y-4 shadow-lg">
-                <PromoCode promoCode={promoCode} setPromoCode={setPromoCode} />
+                <PromoCode promoCode={''} setPromoCode={() => { }} />
                 <PricingSummary subtotal={subtotal} gasPrice={gasPrice} total={total} />
                 <button className="w-full bg-[#f97316] text-white py-4 text-lg font-semibold rounded-3xl shadow-md">
                     Proceed To Checkout

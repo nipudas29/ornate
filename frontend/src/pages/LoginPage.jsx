@@ -2,6 +2,7 @@ import { ChevronRightIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { DynamicContextProvider, DynamicWidget } from '@dynamic-labs/sdk-react-core';
 import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
+import Header from "../components/Header";
 
 export default function LoginPage() {
 
@@ -48,27 +49,6 @@ export default function LoginPage() {
                 <ActionButtons />
             </div>
         </DynamicContextProvider>
-    );
-}
-
-function Header() {
-    return (
-        <div className="flex justify-between items-center">
-            <div className="flex items-end">
-                <span className="text-xl text-orange-600 md:text-xl font-bold">ornate</span>
-                <span className="text-4xl text-orange-600 font-bold leading-none">.</span>
-            </div>
-            <div className="flex items-center space-x-4">
-                {/* DynamicWidget for larger screens */}
-                <div className="hidden md:flex">
-                    <DynamicWidget />
-                </div>
-                {/* Arrow Button */}
-                <div className="w-12 h-12 md:w-12 md:h-12 bg-orange-400 rounded-full flex items-center justify-center">
-                    <ChevronRightIcon className="w-5 h-5 text-white" />
-                </div>
-            </div>
-        </div>
     );
 }
 

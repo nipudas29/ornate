@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronLeft, ShoppingCart, Menu, Minus, Plus, Trash2 } from 'lucide-react';
+import { useParams } from 'react-router-dom';
+import Header from '../components/Header';
 
 function CartIcon() {
     return (
@@ -30,20 +32,6 @@ function BackButton() {
     );
 }
 
-function Header() {
-    return (
-        <header className="fixed top-0 left-0 right-0 bg-[#f5e6d3] p-4 flex justify-between items-center mt-2 z-10">
-            <h1 className="font-bold">
-                <span className="text-xl text-orange-600 md:text-xl font-bold">ornate</span>
-                <span className="text-4xl text-black font-bold leading-none">.</span>
-            </h1>
-            <div className="flex items-center space-x-6">
-                <CartIcon />
-                <MenuIcon />
-            </div>
-        </header>
-    );
-}
 
 function ImageSection() {
     return (
@@ -148,6 +136,22 @@ function PlaceBidButton() {
 
 // Main CheckoutPage component
 export default function AuctionPage() {
+    const { id } = useParams();
+    const [product, setProduct] = useState(null);
+
+    useEffect(() => {
+        // Fetch product data based on id
+        // This is a placeholder, replace with actual API call
+        setProduct({
+            id,
+            image: "/products/p1.png",
+            title: "Auction Item",
+            price: "3 SOL",
+            description: "Limited edition item up for auction."
+        });
+    }, [id]);
+
+    if (!product) return <div>Loading...</div>;
 
     const subtotal = 0;
     const gasPrice = 0.0997;
@@ -158,7 +162,7 @@ export default function AuctionPage() {
             <Header />
 
             {/* Add padding top to compensate for fixed header */}
-            <main className="space-y-4 mt-8 pt-6 pb-48">
+            <main className="space-y-4">
                 <div className="mt-6">
                     <BackButton />
                 </div>

@@ -1,27 +1,18 @@
 import { useState } from 'react';
 import { House, Search, ShoppingCart, Menu, Heart, Receipt, Grid, Headphones, User, SlidersHorizontal } from 'lucide-react';
 import { HomeIcon } from '../components/Icons/HomeIcons';
-
-function Header() {
-    return (
-        <header className="p-4 flex justify-between items-center mt-2">
-            <h1 className="font-bold">
-                <span className="text-xl text-orange-600 md:text-xl font-bold">ornate</span>
-                <span className="text-4xl text-black font-bold leading-none">.</span>
-            </h1>
-            <div className="flex items-center space-x-6">
-                <CartIcon />
-                <MenuIcon />
-            </div>
-        </header>
-    );
-}
+import { useNavigate } from 'react-router-dom';
+import { useCart } from '../components/CartContext';
+import Header from '../components/Header';
 
 function CartIcon() {
+    const { cartItems } = useCart();
     return (
         <button variant="ghost" size="icon" className="relative bg-white p-2 rounded-lg">
             <ShoppingCart className="h-5 w-5" />
-            <span className="absolute top-0 right-0 h-4 w-4 bg-orange-500 rounded-full text-xs text-white flex items-center justify-center">2</span>
+            <span className="absolute top-0 right-0 h-4 w-4 bg-orange-500 rounded-full text-xs text-white flex items-center justify-center">
+                {cartItems.length}
+            </span>
         </button>
     );
 }
@@ -72,19 +63,55 @@ function CategoryButtons() {
     );
 }
 
-function ProductCard({ image, title, price, aspectRatio = '1/1' }) {
+function ProductCard({ id, image, title, price, aspectRatio = '1/1', isBidding = false }) {
+    const navigate = useNavigate();
+    const { addToCart } = useCart();
+
+    const handleClick = () => {
+        if (isBidding) {
+            navigate(`/auction/${id}`);
+        } else {
+            navigate(`/product/${id}`, { state: { product: { id, image, title, price } } });
+        }
+    };
+
+    const handleAddToCart = (e) => {
+        e.stopPropagation();
+        addToCart({ id, image, title, price });
+    };
+
     return (
-        <div className="relative rounded-3xl overflow-hidden">
+        <div className="relative rounded-3xl overflow-hidden" onClick={handleClick}>
             <img src={image} alt={title} className="w-full h-full object-cover" style={{ aspectRatio }} />
+            {isBidding && (
+                <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                    LIVE
+                </div>
+            )}
             <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/50 to-transparent">
                 <div className="flex justify-between items-center">
                     <div>
                         <h3 className="text-sm font-medium text-white">{title}</h3>
                         <span className="text-sm font-bold text-white">{price}</span>
                     </div>
-                    <button className="h-8 w-8 bg-white rounded-full flex items-center justify-center">
-                        <ShoppingCart className="h-4 w-4 text-gray-800" />
-                    </button>
+                    {isBidding ? (
+                        <button
+                            className="w-20 bg-orange-500 rounded-3xl px-3 py-1 flex items-center justify-center text-white text-xs font-bold"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/auction/${id}`);
+                            }}
+                        >
+                            Bid Now
+                        </button>
+                    ) : (
+                        <button
+                            className="h-8 w-8 bg-white rounded-full flex items-center justify-center"
+                            onClick={handleAddToCart}
+                        >
+                            <ShoppingCart className="h-4 w-4 text-gray-800" />
+                        </button>
+                    )}
                 </div>
             </div>
             <button className="absolute top-2 right-2 h-8 w-8 bg-white rounded-full flex items-center justify-center">
@@ -131,10 +158,10 @@ function BottomNavigation() {
 
 export default function HomePage() {
     const products = [
-        { image: "/products/p1.png", title: "Modern style outfit", price: "3 BTC", aspectRatio: '3/4' },
-        { image: "/products/p2.png", title: "Modern style outfit", price: "4 ETH", aspectRatio: '1/1' },
-        { image: "/products/p3.png", title: "Modern style outfit", price: "2 BTC", aspectRatio: '1/1' },
-        { image: "/products/p4.png", title: "Modern style outfit", price: "5 ETH", aspectRatio: '2/3' },
+        { id: 1, image: "/products/p1.png", title: "Outfit", price: "3 SOL", aspectRatio: '3/4', isBidding: true },
+        { id: 2, image: "/products/p2.png", title: "Modern style outfit", price: "4 SOL", aspectRatio: '1/1' },
+        { id: 3, image: "/products/p3.png", title: "Modern style outfit", price: "2 SOL", aspectRatio: '1/1' },
+        { id: 4, image: "/products/p4.png", title: "Modern style outfit", price: "5 SOL", aspectRatio: '2/3' },
     ];
 
     return (
