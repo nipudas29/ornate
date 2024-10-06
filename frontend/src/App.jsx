@@ -1,4 +1,5 @@
 import './App.css';
+import AuctionPage from './pages/AuctionPage';
 import CardPage from './pages/CardPage';
 import CheckoutPage from './pages/CheckoutPage';
 import HomePage from './pages/HomePage';
@@ -14,6 +15,7 @@ function App() {
         <Route path="/home" element={<HomePage />} />
         <Route path="/card" element={<CardPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/auction" element={<AuctionPage />} />
       </Routes>
     </Router>
   );
