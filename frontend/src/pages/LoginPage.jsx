@@ -1,16 +1,53 @@
 import { ChevronRightIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { DynamicContextProvider, DynamicWidget } from '@dynamic-labs/sdk-react-core';
+import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 
 export default function LoginPage() {
+
+    const handleUserConnected = async (user) => {
+        console.log("User connected successfully:", user);
+        const { walletAddress } = user;
+
+        try {
+            // Send the walletAddress to the backend for storing in the database
+            const response = await fetch("http://localhost:3333/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ walletAddress }),  // Send data to backend
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to store wallet in the backend.");
+            }
+
+            console.log("Wallet address stored successfully:", walletAddress);
+        } catch (error) {
+            console.error("Error storing wallet:", error);
+        }
+    };
+
     return (
-        <div className="bg-[#EBD5C3] min-h-screen flex flex-col justify-between">
-            <div className="p-4 space-y-14">
-                <Header />
-                <ImageSection />
-                <AuthLinks />
+        <DynamicContextProvider
+            settings={{
+                environmentId: '5a3adb68-6d34-4521-b840-a4a877a66125',
+                walletConnectors: [EthereumWalletConnectors],
+            }}
+        >
+            <div className="bg-[#EBD5C3] min-h-screen flex flex-col justify-between">
+                <div className="p-4 space-y-14">
+                    <Header />
+                    <ImageSection />
+                    {/* DynamicWidget for smaller screens */}
+                    <div className="flex md:hidden justify-center">
+                        <DynamicWidget />
+                    </div>
+                </div>
+                <ActionButtons />
             </div>
-            <ActionButtons />
-        </div>
+        </DynamicContextProvider>
     );
 }
 
@@ -21,8 +58,15 @@ function Header() {
                 <span className="text-xl text-orange-600 md:text-xl font-bold">ornate</span>
                 <span className="text-4xl text-orange-600 font-bold leading-none">.</span>
             </div>
-            <div className="w-12 h-12 md:w-12 md:h-12 bg-orange-400 rounded-full flex items-center justify-center">
-                <ChevronRightIcon className="w-5 h-5 text-white" />
+            <div className="flex items-center space-x-4">
+                {/* DynamicWidget for larger screens */}
+                <div className="hidden md:flex">
+                    <DynamicWidget />
+                </div>
+                {/* Arrow Button */}
+                <div className="w-12 h-12 md:w-12 md:h-12 bg-orange-400 rounded-full flex items-center justify-center">
+                    <ChevronRightIcon className="w-5 h-5 text-white" />
+                </div>
             </div>
         </div>
     );
@@ -52,18 +96,6 @@ function Indicators() {
             <div className="w-3 h-1 bg-white rounded-full" />
             <div className="w-2 h-1 bg-white/50 rounded-full" />
             <div className="w-2 h-1 bg-white/50 rounded-full" />
-        </div>
-    );
-}
-
-function AuthLinks() {
-    return (
-        <div className="text-center">
-            <span className="text-sm md:text-sm">
-                <a href="#" className="underline font-semibold">Sign up</a>
-                {" Or "}
-                <a href="#" className="underline font-semibold">Log In</a>
-            </span>
         </div>
     );
 }
