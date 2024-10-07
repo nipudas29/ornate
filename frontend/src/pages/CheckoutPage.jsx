@@ -3,6 +3,10 @@ import { ChevronLeft, ShoppingCart, Menu, Minus, Plus, Trash2 } from 'lucide-rea
 import { useLocation } from 'react-router-dom';
 import Header from '../components/Header';
 import { useCart } from '../components/CartContext';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { Connection, PublicKey, Transaction } from '@solana/web3.js';
+import { Program, AnchorProvider, web3 } from '@project-serum/anchor';
+import idl from '../idl/product_purchase.json'; // Make sure to generate and import the IDL
 
 function BackButton() {
     return (
@@ -87,11 +91,59 @@ const PricingSummary = ({ subtotal, gasPrice, discount, total }) => {
 export default function CheckoutPage() {
     const { cartItems, updateQuantity, removeFromCart } = useCart();
     const [promoCode, setPromoCode] = useState('');
+    const wallet = useWallet();
+    const [isProcessing, setIsProcessing] = useState(false);
 
     const subtotal = cartItems.reduce((sum, item) => sum + parseFloat(item.price) * item.quantity, 0);
     const gasPrice = 0.0997;
     const discount = promoCode === 'DISCOUNT10' ? subtotal * 0.1 : 0;
     const total = subtotal + gasPrice - discount;
+
+    const PROGRAM_ID = new PublicKey("9gJdVojkx2iun5S2kDN5c2kK8iBwuwvFMmJHXZrPAYgW");
+
+    const getProvider = () => {
+        const connection = new Connection("https://api.devnet.solana.com");
+        const provider = new AnchorProvider(connection, wallet, AnchorProvider.defaultOptions());
+        return provider;
+    };
+
+    const handleCheckout = async () => {
+        if (!wallet.connected) {
+            alert("Please connect your wallet first!");
+            return;
+        }
+
+        setIsProcessing(true);
+
+        try {
+            const provider = getProvider();
+            const program = new Program(idl, PROGRAM_ID, provider);
+
+            for (const item of cartItems) {
+                const [productPDA] = await PublicKey.findProgramAddress(
+                    [Buffer.from("product"), new PublicKey(item.owner).toBuffer()],
+                    program.programId
+                );
+
+                await program.methods.purchaseProduct()
+                    .accounts({
+                        buyer: wallet.publicKey,
+                        seller: new PublicKey(item.owner),
+                        product: productPDA,
+                        systemProgram: web3.SystemProgram.programId,
+                    })
+                    .rpc();
+            }
+
+            alert("Purchase successful!");
+            // Clear the cart or update the UI as needed
+        } catch (error) {
+            console.error("Error during checkout:", error);
+            alert("An error occurred during checkout. Please try again.");
+        } finally {
+            setIsProcessing(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-[#f5e6d3] text-gray-800 p-4 max-w-md mx-auto font-sans">
@@ -114,8 +166,12 @@ export default function CheckoutPage() {
             <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl p-4 space-y-4 shadow-lg">
                 <PromoCode promoCode={promoCode} setPromoCode={setPromoCode} />
                 <PricingSummary subtotal={subtotal} gasPrice={gasPrice} discount={discount} total={total} />
-                <button className="w-full bg-[#f97316] text-white py-4 text-lg font-semibold rounded-3xl shadow-md">
-                    Proceed To Checkout
+                <button 
+                    className="w-full bg-[#f97316] text-white py-4 text-lg font-semibold rounded-3xl shadow-md"
+                    onClick={handleCheckout}
+                    disabled={isProcessing || !wallet.connected}
+                >
+                    {isProcessing ? "Processing..." : "Proceed To Checkout"}
                 </button>
             </div>
         </div>

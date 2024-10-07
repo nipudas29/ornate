@@ -1,6 +1,7 @@
 import { ShoppingCart, Menu } from 'lucide-react';
 import { useCart } from './CartContext';
 import { useNavigate } from 'react-router-dom';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 
 export default function Header() {
     const { cartItems } = useCart();
@@ -30,6 +31,7 @@ export default function Header() {
                     <Menu className="h-6 w-6" />
                 </button>
             </div>
+            <WalletMultiButton />
         </header>
     );
 }
