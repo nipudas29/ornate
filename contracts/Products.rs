@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("5XG9TZqbFnnQa9geu7H4JfKkPP4z4Gv5trBfAaosjiEN");
+declare_id!("9gJdVojkx2iun5S2kDN5c2kK8iBwuwvFMmJHXZrPAYgW");
 
 #[program]
 pub mod product_purchase {
@@ -50,10 +50,13 @@ pub struct PurchaseProduct<'info> {
 }
 
 #[account]
+#[derive(Default)]
 pub struct Product {
     pub price: u64,
     pub owner: Pubkey,
     pub is_available: bool,
+    pub title: String,
+    pub description: String,
 }
 
 #[error_code]
