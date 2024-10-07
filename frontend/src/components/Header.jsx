@@ -11,7 +11,7 @@ export default function Header() {
     return (
         <header className="p-4 flex justify-between items-center mt-2">
             <h1 className="font-bold">
-                <span className="text-xl text-orange-600 md:text-xl font-bold">ornate</span>
+                <span className="text-xl text-orange-600 md:text-xl font-bold">Ornate</span>
                 <span className="text-4xl text-black font-bold leading-none">.</span>
             </h1>
             <div className="flex items-center space-x-6">

@@ -1,6 +1,5 @@
 import { ChevronRightIcon } from "lucide-react";
 import { Link } from "react-router-dom";
-import Header from "../components/Header";
 import { useEffect, useRef, useState } from "react";
 import GlassmorphismEffect from "../components/MorphidmEffect";
 import { createAppKit } from '@reown/appkit/react'
@@ -10,7 +9,7 @@ import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adap
 
 // 0. Set up Solana Adapter
 const solanaWeb3JsAdapter = new SolanaAdapter({
-  wallets: [new PhantomWalletAdapter(), new SolflareWalletAdapter()]
+    wallets: [new PhantomWalletAdapter(), new SolflareWalletAdapter()]
 })
 
 // 1. Get projectId from https://cloud.reown.com
@@ -18,10 +17,10 @@ const projectId = 'fc49e779c410195ac3cd89219bac765e'
 
 // 2. Create a metadata object - optional
 const metadata = {
-  name: 'Ornate',
-  description: 'AppKit Example',
-  url: 'https://reown.com/appkit', // origin must match your domain & subdomain
-  icons: ['https://assets.reown.com/reown-profile-pic.png']
+    name: 'Ornate',
+    description: 'AppKit Example',
+    url: 'https://reown.com/appkit', // origin must match your domain & subdomain
+    icons: ['https://assets.reown.com/reown-profile-pic.png']
 }
 
 // 3. Create modal
@@ -31,12 +30,12 @@ createAppKit({
     metadata: metadata,
     projectId,
     features: {
-      analytics: true // Optional - defaults to your Cloud configuration
+        analytics: true // Optional - defaults to your Cloud configuration
     },
     themeVariables: {
         "--w3m-accent": "#ff681f"
     }
-  })
+})
 
 export default function LoginPage() {
     return (
@@ -62,10 +61,21 @@ export default function LoginPage() {
     );
 }
 
+function Header() {
+
+    return (
+        <header className="p-4 flex justify-between items-center mt-2">
+            <h1 className="font-bold">
+                <span className="text-xl text-orange-600 md:text-xl font-bold">Ornate</span>
+                <span className="text-4xl text-black font-bold leading-none">.</span>
+            </h1>
+        </header>
+    );
+}
 
 function ImageSection() {
     const [slideIndex, setSlideIndex] = useState(0);
-    const images = ["/login.png", "/login.png", "/login.png"]; // Add more images as needed
+    const images = ["/login.png", "/login1.jpg", "/login2.jpg"]; // Add more images as needed
     const touchStartX = useRef(null);
     const touchEndX = useRef(null);
     const containerRef = useRef(null);
@@ -109,7 +119,7 @@ function ImageSection() {
     }, []);
 
     return (
-        <div 
+        <div
             ref={containerRef}
             className="relative aspect-[3/4] rounded-xl overflow-hidden max-w-sm mx-auto"
         >
@@ -135,9 +145,8 @@ function Indicators({ count, activeIndex }) {
             {[...Array(count)].map((_, index) => (
                 <div
                     key={index}
-                    className={`w-2 h-1 rounded-full ${
-                        index === activeIndex ? 'bg-white' : 'bg-white/50'
-                    }`}
+                    className={`w-2 h-1 rounded-full ${index === activeIndex ? 'bg-white' : 'bg-white/50'
+                        }`}
                 />
             ))}
         </div>
