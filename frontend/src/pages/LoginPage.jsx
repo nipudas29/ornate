@@ -1,58 +1,67 @@
 import { ChevronRightIcon } from "lucide-react";
 import { Link } from "react-router-dom";
-import { DynamicContextProvider, DynamicWidget } from '@dynamic-labs/sdk-react-core';
-import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 import Header from "../components/Header";
 import { useEffect, useRef, useState } from "react";
 import GlassmorphismEffect from "../components/MorphidmEffect";
+import { createAppKit } from '@reown/appkit/react'
+import { SolanaAdapter } from '@reown/appkit-adapter-solana/react'
+import { solana, solanaTestnet, solanaDevnet } from '@reown/appkit/networks'
+import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets'
+
+// 0. Set up Solana Adapter
+const solanaWeb3JsAdapter = new SolanaAdapter({
+  wallets: [new PhantomWalletAdapter(), new SolflareWalletAdapter()]
+})
+
+// 1. Get projectId from https://cloud.reown.com
+const projectId = 'fc49e779c410195ac3cd89219bac765e'
+
+// 2. Create a metadata object - optional
+const metadata = {
+  name: 'Ornate',
+  description: 'AppKit Example',
+  url: 'https://reown.com/appkit', // origin must match your domain & subdomain
+  icons: ['https://assets.reown.com/reown-profile-pic.png']
+}
+
+// 3. Create modal
+createAppKit({
+    adapters: [solanaWeb3JsAdapter],
+    networks: [solana, solanaTestnet, solanaDevnet],
+    metadata: metadata,
+    projectId,
+    features: {
+      analytics: true // Optional - defaults to your Cloud configuration
+    },
+    themeVariables: {
+        "--w3m-accent": "#ff681f"
+    }
+  })
 
 export default function LoginPage() {
-
-    const handleUserConnected = async (user) => {
-        console.log("User connected successfully:", user);
-        const { walletAddress } = user;
-
-        try {
-            // Send the walletAddress to the backend for storing in the database
-            const response = await fetch("http://localhost:3333/auth/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ walletAddress }),  // Send data to backend
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to store wallet in the backend.");
-            }
-
-            console.log("Wallet address stored successfully:", walletAddress);
-        } catch (error) {
-            console.error("Error storing wallet:", error);
-        }
-    };
-
     return (
-        <DynamicContextProvider
-            settings={{
-                environmentId: '5a3adb68-6d34-4521-b840-a4a877a66125',
-                walletConnectors: [EthereumWalletConnectors],
-            }}
-        >
-            <div className="bg-[#EBD5C3] min-h-screen flex flex-col justify-between">
-                <div className="p-4 space-y-14">
-                    <Header />
-                    <ImageSection />
-                    {/* DynamicWidget for smaller screens */}
-                    <div className="flex md:hidden justify-center">
-                        <DynamicWidget />
-                    </div>
-                </div>
-                <ActionButtons />
+        <div className="bg-[#EBD5C3] min-h-screen flex flex-col justify-between relative">
+            <div className="p-4 space-y-14">
+                <Header />
+                <ImageSection />
             </div>
-        </DynamicContextProvider>
+
+            {/* Responsive w3m-button positioning */}
+            <div className="hidden md:block absolute top-10 right-40">
+                {/* Button visible at top-right for larger screens */}
+                <w3m-button label="Login or Sign Up" />
+            </div>
+
+            <div className="md:hidden p-4 mb-4 flex items-center justify-center">
+                {/* Button below image for smaller screens */}
+                <w3m-button label="Login or Sign Up" />
+            </div>
+
+            <ActionButtons />
+        </div>
     );
 }
+
 
 function ImageSection() {
     const [slideIndex, setSlideIndex] = useState(0);
