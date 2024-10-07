@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { DynamicContextProvider, DynamicWidget } from '@dynamic-labs/sdk-react-core';
 import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 import Header from "../components/Header";
+import { useEffect, useRef, useState } from "react";
+import GlassmorphismEffect from "../components/MorphidmEffect";
 
 export default function LoginPage() {
 
@@ -53,48 +55,103 @@ export default function LoginPage() {
 }
 
 function ImageSection() {
+    const [slideIndex, setSlideIndex] = useState(0);
+    const images = ["/login.png", "/login.png", "/login.png"]; // Add more images as needed
+    const touchStartX = useRef(null);
+    const touchEndX = useRef(null);
+    const containerRef = useRef(null);
+
+    const handleTouchStart = (e) => {
+        touchStartX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchMove = (e) => {
+        touchEndX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchEnd = () => {
+        if (touchStartX.current && touchEndX.current) {
+            const diff = touchStartX.current - touchEndX.current;
+            if (Math.abs(diff) > 50) { // Minimum swipe distance
+                if (diff > 0) {
+                    // Swipe left
+                    setSlideIndex((prevIndex) => (prevIndex + 1) % images.length);
+                } else {
+                    // Swipe right
+                    setSlideIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
+                }
+            }
+        }
+        touchStartX.current = null;
+        touchEndX.current = null;
+    };
+
+    useEffect(() => {
+        const container = containerRef.current;
+        container.addEventListener('touchstart', handleTouchStart);
+        container.addEventListener('touchmove', handleTouchMove);
+        container.addEventListener('touchend', handleTouchEnd);
+
+        return () => {
+            container.removeEventListener('touchstart', handleTouchStart);
+            container.removeEventListener('touchmove', handleTouchMove);
+            container.removeEventListener('touchend', handleTouchEnd);
+        };
+    }, []);
+
     return (
-        <div className="relative aspect-[3/4] rounded-xl overflow-hidden max-w-sm mx-auto">
+        <div 
+            ref={containerRef}
+            className="relative aspect-[3/4] rounded-xl overflow-hidden max-w-sm mx-auto"
+        >
             <img
-                src="/login.png"
+                src={images[slideIndex]}
                 alt="Couture Meets Crypto"
                 className="rounded-xl object-cover w-full h-full"
             />
-            <div className="absolute top-4 left-4 right-4">
+            <GlassmorphismEffect />
+            <div className="absolute top-4 left-4 right-4 z-10">
                 <h1 className="text-4xl md:text-4xl text-center font-bold text-white">
                     Couture Meets Crypto
                 </h1>
             </div>
-            <Indicators />
+            <Indicators count={images.length} activeIndex={slideIndex} />
         </div>
     );
 }
 
-function Indicators() {
+function Indicators({ count, activeIndex }) {
     return (
-        <div className="absolute inset-x-0 bottom-4 flex justify-center space-x-1">
-            <div className="w-3 h-1 bg-white rounded-full" />
-            <div className="w-2 h-1 bg-white/50 rounded-full" />
-            <div className="w-2 h-1 bg-white/50 rounded-full" />
+        <div className="absolute inset-x-0 bottom-4 flex justify-center space-x-1 z-10">
+            {[...Array(count)].map((_, index) => (
+                <div
+                    key={index}
+                    className={`w-2 h-1 rounded-full ${
+                        index === activeIndex ? 'bg-white' : 'bg-white/50'
+                    }`}
+                />
+            ))}
         </div>
     );
 }
 
 function ActionButtons() {
     return (
-        <div className="p-4 mb-4 flex-shrink-0">
-            <div className="flex space-x-3">
-                <button className="w-[75px] h-[75px] md:w-[80px] md:h-[80px] bg-white rounded-xl md:rounded-2xl flex items-center justify-center shadow-md">
+        <div className="p-4 mb-4">
+            <div className="flex items-center space-x-3">
+                <button className="w-[70px] h-[70px] flex-shrink-0 flex items-center justify-center overflow-hidden">
                     <img
-                        src="/google.png"
-                        alt="Google"
-                        width={20}
-                        height={20}
+                        src="/phantom.png"
+                        alt="Phantom"
+                        className="object-cover"
                     />
                 </button>
-                <Link to={'/home'} className="flex-grow text-lg bg-orange-400 text-white rounded-xl md:rounded-2xl py-2 px-4 font-semibold shadow-md flex items-center justify-center">
-                    Get Started
-                    <ChevronRightIcon className="w-4 h-4 ml-2" />
+                <Link
+                    to="/home"
+                    className="flex-grow bg-orange-400 text-white rounded-xl py-4 px-6 font-semibold shadow-md flex items-center justify-center"
+                >
+                    <span className="text-lg">Get Started</span>
+                    <ChevronRightIcon className="w-5 h-5 ml-2" />
                 </Link>
             </div>
         </div>
