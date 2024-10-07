@@ -45,7 +45,7 @@ const CartItem = ({ item, updateQuantity, removeItem }) => {
 // Component to render the promo code input and apply button
 const PromoCode = ({ promoCode, setPromoCode }) => {
     return (
-        <div className="flex gap-2 bg-white p-3 rounded-lg shadow-md">
+        <div className="flex gap-2 bg-white p-3 rounded-lg drop-shadow-lg">
             <input
                 type="text"
                 placeholder="PROMO CODE"
@@ -61,7 +61,7 @@ const PromoCode = ({ promoCode, setPromoCode }) => {
 // Component to render the subtotal, gas price, and total
 const PricingSummary = ({ subtotal, gasPrice, discount, total }) => {
     return (
-        <div className="bg-white p-4 rounded-lg shadow-md space-y-2 text-sm">
+        <div className="bg-white p-4 rounded-lg drop-shadow-lg space-y-2 text-sm">
             <div className="flex justify-between">
                 <span className="text-gray-500">Sub Total</span>
                 <span>{subtotal.toFixed(3)} SOL</span>
@@ -111,7 +111,7 @@ export default function CheckoutPage() {
                 ))}
             </main>
 
-            <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl p-4 space-y-4 shadow-lg">
+            <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-[43px] p-4 space-y-8 shadow-lg">
                 <PromoCode promoCode={promoCode} setPromoCode={setPromoCode} />
                 <PricingSummary subtotal={subtotal} gasPrice={gasPrice} discount={discount} total={total} />
                 <button className="w-full bg-[#f97316] text-white py-4 text-lg font-semibold rounded-3xl shadow-md">

@@ -5,26 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../components/CartContext';
 import Header from '../components/Header';
 
-function CartIcon() {
-    const { cartItems } = useCart();
-    return (
-        <button variant="ghost" size="icon" className="relative bg-white p-2 rounded-lg">
-            <ShoppingCart className="h-5 w-5" />
-            <span className="absolute top-0 right-0 h-4 w-4 bg-orange-500 rounded-full text-xs text-white flex items-center justify-center">
-                {cartItems.length}
-            </span>
-        </button>
-    );
-}
-
-function MenuIcon() {
-    return (
-        <button variant="ghost" size="icon" className='bg-white p-2 rounded-lg'>
-            <Menu className="h-6 w-6" />
-        </button>
-    );
-}
-
 function SearchBar() {
     return (
         <div className="px-4 mb-4 w-full">
@@ -46,7 +26,7 @@ function CategoryButtons() {
     const [selectedCategory, setSelectedCategory] = useState("All");
 
     return (
-        <div className="px-4 mt-3 mb-4 flex space-x-2 overflow-x-auto">
+        <div className="no-scrollbar px-4 mt-3 mb-4 flex space-x-2 overflow-x-auto">
             {categories.map((item) => (
                 <button
                     key={item}
@@ -71,7 +51,7 @@ function ProductCard({ id, image, title, price, aspectRatio = '1/1', isBidding =
         if (isBidding) {
             navigate(`/auction/${id}`);
         } else {
-            navigate(`/product/${id}`, { state: { product: { id, image, title, price } } });
+            navigate(`/product/${id}`, { state: { product: { id, image, title, price, description: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.' } } });
         }
     };
 
@@ -158,10 +138,10 @@ function BottomNavigation() {
 
 export default function HomePage() {
     const products = [
-        { id: 1, image: "/products/p1.png", title: "Outfit", price: "3 SOL", aspectRatio: '3/4', isBidding: true },
-        { id: 2, image: "/products/p2.png", title: "Modern style outfit", price: "4 SOL", aspectRatio: '1/1' },
-        { id: 3, image: "/products/p3.png", title: "Modern style outfit", price: "2 SOL", aspectRatio: '1/1' },
-        { id: 4, image: "/products/p4.png", title: "Modern style outfit", price: "5 SOL", aspectRatio: '2/3' },
+        { id: 1, image: "/products/p1.png", title: "Outfit", price: "3 SOL", aspectRatio: '3/4', isBidding: true, description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime ducimus quasi voluptatibus quaerat corporis dolore reprehenderit cumque alias beatae? Reiciendis?" },
+        { id: 2, image: "/products/p2.png", title: "Modern style outfit", price: "4 SOL", aspectRatio: '1/1', description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime ducimus quasi voluptatibus quaerat corporis dolore reprehenderit cumque alias beatae? Reiciendis?" },
+        { id: 3, image: "/products/p3.png", title: "Modern style outfit", price: "2 SOL", aspectRatio: '1/1', description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime ducimus quasi voluptatibus quaerat corporis dolore reprehenderit cumque alias beatae? Reiciendis?" },
+        { id: 4, image: "/products/p4.png", title: "Modern style outfit", price: "5 SOL", aspectRatio: '2/3', description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime ducimus quasi voluptatibus quaerat corporis dolore reprehenderit cumque alias beatae? Reiciendis?" },
     ];
 
     return (

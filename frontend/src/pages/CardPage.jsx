@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import { useCart } from "../components/CartContext";
+import { ChevronLeft, Minus, Plus } from 'lucide-react';
 
 function ImageSection({ image }) {
     return (
@@ -53,25 +54,37 @@ function BuyButtonNav({ onBuyNow }) {
             <div className="flex items-center gap-3">
                 <button
                     onClick={handleDecrement}
-                    className="rounded-full w-10 h-10 text-white p-0 border bg-[#E6841D] text-sm font-bold"
+                    className="rounded-full w-10 h-10 text-white p-0 border bg-[#E6841D] text-sm font-bold flex justify-center items-center"
                 >
-                    -
+                    <Minus size={16} />
                 </button>
                 <span className="text-sm">{quantity}</span>
                 <button
                     onClick={handleIncrement}
-                    className="rounded-full w-10 h-10 text-white p-0 border bg-[#E6841D] text-sm font-bold"
+                    className="rounded-full w-10 h-10 text-white p-0 border bg-[#E6841D] text-sm font-bold flex justify-center items-center"
                 >
-                    +
+                    <Plus size={16} />
                 </button>
             </div>
             <button
                 onClick={() => onBuyNow(quantity)}
                 className="bg-[#E6841D] h-[48px] w-[156px] hover:bg-[#f4a460] text-white rounded-full px-4 py-1.5 text-sm font-semibold"
             >
-                Buy Now
+                Add to Cart
             </button>
         </div>
+    );
+}
+
+
+function BackButton() {
+    return (
+        <button
+            className="bg-white p-2 flex gap-2 rounded-lg shadow-md ml-5"
+            onClick={() => window.history.back()} // Functionality to go back in history
+        >
+            <ChevronLeft className="h-5 w-5" />
+        </button>
     );
 }
 
@@ -90,7 +103,7 @@ export default function CardPage() {
             // This is a placeholder, replace with actual API call
             setProduct({
                 id,
-                image: "/products/p1.png",
+                image: "/products/p2.png",
                 title: "Modern Style Outfit",
                 price: "2 SOL",
                 description: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
@@ -111,6 +124,7 @@ export default function CardPage() {
         <div className="min-h-screen bg-white w-full font-sans flex flex-col">
             <div className="bg-[#f8ede3]">
                 <Header />
+                <BackButton />
                 <ImageSection image={product.image} />
             </div>
 
