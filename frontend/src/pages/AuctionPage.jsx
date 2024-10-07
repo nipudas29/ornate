@@ -1,28 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import { ChevronLeft, ShoppingCart, Menu, Minus, Plus, Trash2 } from 'lucide-react';
+/* eslint-disable react/prop-types */
+import { useEffect, useState } from 'react';
+import { ChevronLeft } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { Connection, PublicKey, Transaction } from '@solana/web3.js';
+import { Connection, PublicKey } from '@solana/web3.js';
 import { Program, AnchorProvider, web3 } from '@project-serum/anchor';
 import idl from '../idl/dutch_auction.json'; // Make sure to generate and import the IDL
 
-function CartIcon() {
-    return (
-        <button variant="ghost" size="icon" className="relative bg-white p-2 rounded-lg">
-            <ShoppingCart className="h-5 w-5" />
-            <span className="absolute top-0 right-0 h-4 w-4 bg-orange-500 rounded-full text-xs text-white flex items-center justify-center">2</span>
-        </button>
-    );
-}
+// function CartIcon() {
+//     return (
+//         <button variant="ghost" size="icon" className="relative bg-white p-2 rounded-lg">
+//             <ShoppingCart className="h-5 w-5" />
+//             <span className="absolute top-0 right-0 h-4 w-4 bg-orange-500 rounded-full text-xs text-white flex items-center justify-center">2</span>
+//         </button>
+//     );
+// }
 
-function MenuIcon() {
-    return (
-        <button variant="ghost" size="icon" className='bg-white p-2 rounded-lg'>
-            <Menu className="h-6 w-6" />
-        </button>
-    );
-}
+// function MenuIcon() {
+//     return (
+//         <button variant="ghost" size="icon" className='bg-white p-2 rounded-lg'>
+//             <Menu className="h-6 w-6" />
+//         </button>
+//     );
+// }
 
 function BackButton() {
     return (
@@ -81,7 +82,8 @@ function PlaceBidButton() {
     const [time, setTime] = useState({ hours: 0, minutes: 3, seconds: 59 })
     const wallet = useWallet();
     const [isProcessing, setIsProcessing] = useState(false);
-
+    const { id } = useParams();
+    console.log('Id: ', id)
     console.log('Placing Bid')
     const PROGRAM_ID = new PublicKey("5XG9TZqbFnnQa9geu7H4JfKkPP4z4Gv5trBfAaosjiEN");
 
@@ -97,35 +99,29 @@ function PlaceBidButton() {
             alert("Please connect your wallet first!");
             return;
         }
-
+    
         setIsProcessing(true);
-
+    
         try {
             const provider = getProvider();
             const program = new Program(idl, PROGRAM_ID, provider);
-
-            console.log('Program: ', program.programId)
-            const [auctionPDA] = await PublicKey.findProgramAddress(
-                [Buffer.from("auction"), wallet.publicKey.toBuffer()],
+    
+            console.log('Before find prog async')
+            const [auctionPDA] = PublicKey.findProgramAddressSync(
+                [Buffer.from("auction"), new PublicKey('51wqQqWLN3cexS4HCchXYti3aRqkPjJKZEr3K5M8krMp').toBuffer()],
                 program.programId
             );
-
-            console.log('Placing bid 3')
-            console.log({
-                auction: auctionPDA,
-                bidder: wallet.publicKey,
-                seller: new PublicKey("D52fzjcKYLWfeGzVcwwyLzTqP1MEpHxb4giS2MNoAeZQ"), // Replace with actual seller's public key
-                systemProgram: web3.SystemProgram.programId,
-            })
+    
+            console.log('Placing txn!')
             await program.methods.placeBid()
                 .accounts({
                     auction: auctionPDA,
                     bidder: wallet.publicKey,
-                    seller: new PublicKey("D52fzjcKYLWfeGzVcwwyLzTqP1MEpHxb4giS2MNoAeZQ"), // Replace with actual seller's public key
+                    seller: new PublicKey("9gJdVojkx2iun5S2kDN5c2kK8iBwuwvFMmJHXZrPAYgW"), // Replace with actual seller's public key
                     systemProgram: web3.SystemProgram.programId,
                 })
                 .rpc();
-
+    
             alert("Bid placed successfully!");
         } catch (error) {
             console.error("Error placing bid:", error);

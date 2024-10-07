@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+/* eslint-disable react/prop-types */
+import { useState } from 'react';
 import { ChevronLeft, ShoppingCart, Menu, Minus, Plus, Trash2 } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import Header from '../components/Header';
@@ -115,15 +116,15 @@ export default function CheckoutPage() {
             const program = new Program(idl, PROGRAM_ID, provider);
 
             for (const item of cartItems) {
-                const [productPDA] = await PublicKey.findProgramAddress(
-                    [Buffer.from("product"), new PublicKey(item.owner).toBuffer()],
+                const [productPDA] = PublicKey.findProgramAddressSync(
+                    [Buffer.from("product"), new PublicKey('51wqQqWLN3cexS4HCchXYti3aRqkPjJKZEr3K5M8krMp').toBuffer()],
                     program.programId
                 );
 
                 await program.methods.purchaseProduct()
                     .accounts({
                         buyer: wallet.publicKey,
-                        seller: new PublicKey(item.owner),
+                        seller: new PublicKey('9gJdVojkx2iun5S2kDN5c2kK8iBwuwvFMmJHXZrPAYgW'),
                         product: productPDA,
                         systemProgram: web3.SystemProgram.programId,
                     })
