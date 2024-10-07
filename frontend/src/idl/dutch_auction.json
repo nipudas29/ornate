@@ -1,0 +1,150 @@
+{
+    "version": "0.1.0",
+    "name": "dutch_auction",
+    "instructions": [
+      {
+        "name": "createAuction",
+        "accounts": [
+          {
+            "name": "auction",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "seller",
+            "isMut": true,
+            "isSigner": true
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "startPrice",
+            "type": "u64"
+          },
+          {
+            "name": "reservePrice",
+            "type": "u64"
+          },
+          {
+            "name": "duration",
+            "type": "i64"
+          },
+          {
+            "name": "decrement",
+            "type": "u64"
+          }
+        ]
+      },
+      {
+        "name": "placeBid",
+        "accounts": [
+          {
+            "name": "auction",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "bidder",
+            "isMut": true,
+            "isSigner": true
+          },
+          {
+            "name": "seller",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": []
+      },
+      {
+        "name": "endAuction",
+        "accounts": [
+          {
+            "name": "auction",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "seller",
+            "isMut": false,
+            "isSigner": true
+          }
+        ],
+        "args": []
+      }
+    ],
+    "accounts": [
+      {
+        "name": "Auction",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "seller",
+              "type": "publicKey"
+            },
+            {
+              "name": "startPrice",
+              "type": "u64"
+            },
+            {
+              "name": "currentPrice",
+              "type": "u64"
+            },
+            {
+              "name": "reservePrice",
+              "type": "u64"
+            },
+            {
+              "name": "startTime",
+              "type": "i64"
+            },
+            {
+              "name": "endTime",
+              "type": "i64"
+            },
+            {
+              "name": "decrement",
+              "type": "u64"
+            },
+            {
+              "name": "winner",
+              "type": "publicKey"
+            },
+            {
+              "name": "isActive",
+              "type": "bool"
+            }
+          ]
+        }
+      }
+    ],
+    "errors": [
+      {
+        "code": 6000,
+        "name": "AuctionEnded",
+        "msg": "The auction has already ended"
+      },
+      {
+        "code": 6001,
+        "name": "AuctionStillActive",
+        "msg": "The auction is still active"
+      },
+      {
+        "code": 6002,
+        "name": "ReservePriceNotMet",
+        "msg": "The reserve price has not been met"
+      }
+    ]
+  }
+  

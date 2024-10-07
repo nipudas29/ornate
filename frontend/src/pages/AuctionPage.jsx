@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { ChevronLeft, ShoppingCart, Menu, Minus, Plus, Trash2 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import Header from '../components/Header';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { Connection, PublicKey, Transaction } from '@solana/web3.js';
+import { Program, AnchorProvider, web3 } from '@project-serum/anchor';
+import idl from '../idl/dutch_auction.json'; // Make sure to generate and import the IDL
 
 function CartIcon() {
     return (
@@ -31,7 +35,6 @@ function BackButton() {
         </button>
     );
 }
-
 
 function ImageSection() {
     return (
@@ -76,6 +79,61 @@ const PricingSummary = ({ subtotal, gasPrice, total }) => {
 
 function PlaceBidButton() {
     const [time, setTime] = useState({ hours: 0, minutes: 3, seconds: 59 })
+    const wallet = useWallet();
+    const [isProcessing, setIsProcessing] = useState(false);
+
+    console.log('Placing Bid')
+    const PROGRAM_ID = new PublicKey("5XG9TZqbFnnQa9geu7H4JfKkPP4z4Gv5trBfAaosjiEN");
+
+    const getProvider = () => {
+        const connection = new Connection("https://api.devnet.solana.com");
+        const provider = new AnchorProvider(connection, wallet, AnchorProvider.defaultOptions());
+        return provider;
+    };
+
+    console.log('Placing Bid 2')
+    const handlePlaceBid = async () => {
+        if (!wallet.connected) {
+            alert("Please connect your wallet first!");
+            return;
+        }
+
+        setIsProcessing(true);
+
+        try {
+            const provider = getProvider();
+            const program = new Program(idl, PROGRAM_ID, provider);
+
+            console.log('Program: ', program.programId)
+            const [auctionPDA] = await PublicKey.findProgramAddress(
+                [Buffer.from("auction"), wallet.publicKey.toBuffer()],
+                program.programId
+            );
+
+            console.log('Placing bid 3')
+            console.log({
+                auction: auctionPDA,
+                bidder: wallet.publicKey,
+                seller: new PublicKey("D52fzjcKYLWfeGzVcwwyLzTqP1MEpHxb4giS2MNoAeZQ"), // Replace with actual seller's public key
+                systemProgram: web3.SystemProgram.programId,
+            })
+            await program.methods.placeBid()
+                .accounts({
+                    auction: auctionPDA,
+                    bidder: wallet.publicKey,
+                    seller: new PublicKey("D52fzjcKYLWfeGzVcwwyLzTqP1MEpHxb4giS2MNoAeZQ"), // Replace with actual seller's public key
+                    systemProgram: web3.SystemProgram.programId,
+                })
+                .rpc();
+
+            alert("Bid placed successfully!");
+        } catch (error) {
+            console.error("Error placing bid:", error);
+            alert("An error occurred while placing the bid. Please try again.");
+        } finally {
+            setIsProcessing(false);
+        }
+    };
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -127,8 +185,12 @@ function PlaceBidButton() {
                     </div>
                 </div>
             </div>
-            <button className="bg-[#f97316] hover:bg-[#ea580c] text-white font-semibold py-2 px-4 rounded-full">
-                PLACE BID
+            <button 
+                className="bg-[#f97316] hover:bg-[#ea580c] text-white font-semibold py-2 px-4 rounded-full"
+                onClick={handlePlaceBid}
+                disabled={isProcessing || !wallet.connected}
+            >
+                {isProcessing ? "Processing..." : "PLACE BID"}
             </button>
         </div>
     )

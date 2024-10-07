@@ -1,6 +1,7 @@
 import { ShoppingCart, Menu } from 'lucide-react';
 import { useCart } from './CartContext';
 import { useNavigate } from 'react-router-dom';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 
 export default function Header() {
     const { cartItems } = useCart();
@@ -11,7 +12,7 @@ export default function Header() {
     return (
         <header className="p-4 flex justify-between items-center mt-2">
             <h1 className="font-bold">
-                <span className="text-xl text-orange-600 md:text-xl font-bold">Ornate</span>
+                <span className="text-xl text-orange-600 md:text-xlfont-bold">ornate</span>
                 <span className="text-4xl text-black font-bold leading-none">.</span>
             </h1>
             <div className="flex items-center space-x-6">
@@ -30,6 +31,7 @@ export default function Header() {
                     <Menu className="h-6 w-6" />
                 </button>
             </div>
+            <WalletMultiButton />
         </header>
     );
 }
